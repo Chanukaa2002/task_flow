@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:task_flow/core/config/app_colors.dart';
 import 'package:task_flow/core/config/app_constants.dart';
 import 'package:task_flow/core/utils/responsive_utils.dart';
+import 'package:task_flow/domain/repositories/auth_repository.dart';
+import 'package:task_flow/domain/repositories/local_storage_repository.dart';
 import 'package:task_flow/presentation/common/widgets/custom_button.dart';
 import 'package:task_flow/presentation/common/widgets/custom_text_field.dart';
 import 'package:task_flow/presentation/auth/login/login_viewmodel.dart';
@@ -14,7 +16,10 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => LoginViewModel(),
+      create: (context) => LoginViewModel(
+        authRepository: context.read<AuthRepository>(),
+        localStorage: context.read<LocalStorageRepository>(),
+      ),
       child: const _LoginScreenContent(),
     );
   }
@@ -158,7 +163,11 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
                   text: 'Login',
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      viewModel.login(context);
+                      viewModel.login(
+                        context,
+                        _emailController.text,
+                        _passwordController.text,
+                      );
                     }
                   },
                   isLoading: viewModel.isLoading,

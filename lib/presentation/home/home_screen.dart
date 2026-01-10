@@ -4,6 +4,9 @@ import 'package:task_flow/core/config/app_colors.dart';
 import 'package:task_flow/core/config/app_constants.dart';
 import 'package:task_flow/core/utils/date_utils.dart';
 import 'package:task_flow/core/utils/responsive_utils.dart';
+import 'package:task_flow/domain/repositories/auth_repository.dart';
+import 'package:task_flow/domain/repositories/local_storage_repository.dart';
+import 'package:task_flow/domain/repositories/task_repository.dart';
 import 'package:task_flow/presentation/common/widgets/bottom_nav_bar.dart';
 import 'package:task_flow/presentation/home/home_viewmodel.dart';
 import 'package:task_flow/presentation/home/widgets/task_list_item.dart';
@@ -17,7 +20,11 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => HomeViewModel(),
+      create: (context) => HomeViewModel(
+        taskRepository: context.read<TaskRepository>(),
+        authRepository: context.read<AuthRepository>(),
+        localStorage: context.read<LocalStorageRepository>(),
+      ),
       child: const _HomeScreenContent(),
     );
   }
@@ -128,7 +135,9 @@ class _TaskListView extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    DateTimeUtils.formatDateTime(viewModel.lastAppOpen),
+                    viewModel.lastAppOpen != null
+                        ? DateTimeUtils.formatDateTime(viewModel.lastAppOpen!)
+                        : 'N/A',
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,

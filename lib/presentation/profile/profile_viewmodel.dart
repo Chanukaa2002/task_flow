@@ -1,26 +1,79 @@
 import 'package:flutter/material.dart';
+import 'package:task_flow/core/errors/exceptions.dart';
+import 'package:task_flow/domain/repositories/auth_repository.dart';
+import 'package:task_flow/domain/repositories/local_storage_repository.dart';
 
-/// Placeholder ViewModel for Profile screen
+/// ViewModel for Profile screen with Firebase Auth
 class ProfileViewModel extends ChangeNotifier {
-  String _userEmail = 'user@taskflow.com';
+  final AuthRepository _authRepository;
+  final LocalStorageRepository _localStorage;
+
+  ProfileViewModel({
+    required AuthRepository authRepository,
+    required LocalStorageRepository localStorage,
+  }) : _authRepository = authRepository,
+       _localStorage = localStorage;
+
+  String _userEmail = '';
+  bool _isLoading = false;
 
   String get userEmail => _userEmail;
+  bool get isLoading => _isLoading;
 
-  /// Get user email - placeholder for future Firebase implementation
+  /// Get user email from Firebase
   Future<void> getUserEmail() async {
-    // TODO: Implement Firebase get user email
-    await Future.delayed(const Duration(milliseconds: 500));
-    _userEmail = 'user@taskflow.com';
-    notifyListeners();
+    try {
+      final user = await _authRepository.getCurrentUser();
+      if (user != null) {
+        _userEmail = user.email;
+        notifyListeners();
+      }
+    } catch (e) {
+      _userEmail = 'Error loading email';
+      notifyListeners();
+    }
   }
 
-  /// Logout - placeholder for future Firebase implementation
+  /// Logout user
   Future<void> logout(BuildContext context) async {
-    // TODO: Implement Firebase logout
-    await Future.delayed(const Duration(seconds: 1));
+    _isLoading = true;
+    notifyListeners();
 
-    if (context.mounted) {
-      Navigator.pushReplacementNamed(context, '/login');
+    try {
+      // Sign out from Firebase
+      await _authRepository.signOut();
+
+      // Clear local storage
+      await _localStorage.clearAll();
+
+      _isLoading = false;
+      notifyListeners();
+
+      // Navigate to login screen
+      if (context.mounted) {
+        Navigator.pushReplacementNamed(context, '/login');
+      }
+    } on AuthException catch (e) {
+      _isLoading = false;
+      notifyListeners();
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message), backgroundColor: Colors.red),
+        );
+      }
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to logout: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 }

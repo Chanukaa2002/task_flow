@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:task_flow/core/config/app_colors.dart';
 import 'package:task_flow/core/config/app_constants.dart';
 import 'package:task_flow/core/utils/responsive_utils.dart';
+import 'package:task_flow/domain/repositories/auth_repository.dart';
 import 'package:task_flow/presentation/common/widgets/custom_button.dart';
 import 'package:task_flow/presentation/common/widgets/custom_text_field.dart';
 import 'package:task_flow/presentation/auth/register/register_viewmodel.dart';
@@ -14,7 +15,8 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => RegisterViewModel(),
+      create: (context) =>
+          RegisterViewModel(authRepository: context.read<AuthRepository>()),
       child: const _RegisterScreenContent(),
     );
   }
@@ -188,7 +190,12 @@ class _RegisterScreenContentState extends State<_RegisterScreenContent> {
                   text: 'Register',
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      viewModel.register(context);
+                      viewModel.register(
+                        context,
+                        _emailController.text,
+                        _passwordController.text,
+                        _confirmPasswordController.text,
+                      );
                     }
                   },
                   isLoading: viewModel.isLoading,

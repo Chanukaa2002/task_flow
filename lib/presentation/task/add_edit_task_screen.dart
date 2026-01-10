@@ -5,6 +5,8 @@ import 'package:task_flow/core/config/app_constants.dart';
 import 'package:task_flow/core/utils/date_utils.dart';
 import 'package:task_flow/core/utils/responsive_utils.dart';
 import 'package:task_flow/data/models/task_model.dart';
+import 'package:task_flow/domain/repositories/auth_repository.dart';
+import 'package:task_flow/domain/repositories/task_repository.dart';
 import 'package:task_flow/presentation/common/widgets/custom_app_bar.dart';
 import 'package:task_flow/presentation/common/widgets/custom_button.dart';
 import 'package:task_flow/presentation/common/widgets/custom_text_field.dart';
@@ -20,8 +22,11 @@ class AddEditTaskScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) {
-        final viewModel = AddEditTaskViewModel();
+      create: (context) {
+        final viewModel = AddEditTaskViewModel(
+          taskRepository: context.read<TaskRepository>(),
+          authRepository: context.read<AuthRepository>(),
+        );
         if (task != null) {
           viewModel.initializeWithTask(task!);
         }
