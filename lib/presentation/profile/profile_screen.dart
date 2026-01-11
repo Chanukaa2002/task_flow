@@ -32,56 +32,189 @@ class _ProfileScreenContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final viewModel = context.watch<ProfileViewModel>();
     final screenWidth = ResponsiveUtils.screenWidth(context);
+    final userInitial = viewModel.userEmail.isNotEmpty
+        ? viewModel.userEmail[0].toUpperCase()
+        : 'U';
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const CustomAppBar(title: 'Profile', showBackButton: false),
-      body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.06,
-          vertical: AppConstants.paddingLarge,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Email Address Section
-            const Text(
-              'Email Address',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.06),
+          child: Column(
+            children: [
+              const SizedBox(height: AppConstants.paddingLarge),
 
-            const SizedBox(height: AppConstants.paddingSmall),
-
-            Container(
-              width: screenWidth,
-              padding: const EdgeInsets.all(AppConstants.paddingMedium),
-              decoration: BoxDecoration(
-                color: AppColors.cardBackground,
-                borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Text(
-                viewModel.userEmail,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
+              // Profile Avatar Section
+              Container(
+                width: screenWidth * 0.25,
+                height: screenWidth * 0.25,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [AppColors.primary, AppColors.primaryDark],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    userInitial,
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.1,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textWhite,
+                    ),
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: AppConstants.paddingLarge),
+              const SizedBox(height: AppConstants.paddingXLarge),
 
-            // Logout Button
-            CustomButton(
-              text: 'Logout',
-              onPressed: () => viewModel.logout(context),
-              variant: ButtonVariant.danger,
-            ),
-          ],
+              // Email Card
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(AppConstants.paddingMedium),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(AppConstants.radiusLarge),
+                  border: Border.all(color: AppColors.border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(AppConstants.paddingSmall),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(
+                          AppConstants.radiusSmall,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.email_outlined,
+                        color: AppColors.primary,
+                        size: AppConstants.iconMedium,
+                      ),
+                    ),
+                    const SizedBox(width: AppConstants.paddingMedium),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Email Address',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            viewModel.userEmail,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: AppConstants.paddingMedium),
+
+              // App Version Card
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(AppConstants.paddingMedium),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(AppConstants.radiusLarge),
+                  border: Border.all(color: AppColors.border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(AppConstants.paddingSmall),
+                      decoration: BoxDecoration(
+                        color: AppColors.success.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(
+                          AppConstants.radiusSmall,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.info_outline,
+                        color: AppColors.success,
+                        size: AppConstants.iconMedium,
+                      ),
+                    ),
+                    const SizedBox(width: AppConstants.paddingMedium),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'App Version',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            '1.0.0',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: AppConstants.paddingXLarge),
+              // Logout Button
+              CustomButton(
+                text: 'Logout',
+                onPressed: () => viewModel.logout(context),
+                variant: ButtonVariant.danger,
+              ),
+
+              const SizedBox(height: AppConstants.paddingLarge),
+            ],
+          ),
         ),
       ),
     );
