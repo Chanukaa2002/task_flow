@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,14 +9,20 @@ import 'package:task_flow/core/config/app_theme.dart';
 import 'package:task_flow/core/routes/app_routes.dart';
 import 'package:task_flow/data/repositories/firebase_auth_repository.dart';
 import 'package:task_flow/data/repositories/firestore_task_repository.dart';
+import 'package:task_flow/data/repositories/openweather_repository.dart';
 import 'package:task_flow/data/repositories/shared_prefs_repository.dart';
+import 'package:task_flow/data/services/weather_api_service.dart';
 import 'package:task_flow/domain/repositories/auth_repository.dart';
 import 'package:task_flow/domain/repositories/local_storage_repository.dart';
 import 'package:task_flow/domain/repositories/task_repository.dart';
+import 'package:task_flow/domain/repositories/weather_repository.dart';
 import 'package:task_flow/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize dotenv
+  await dotenv.load(fileName: '.env');
 
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -39,6 +46,9 @@ class TaskFlowApp extends StatelessWidget {
         ),
         Provider<LocalStorageRepository>(
           create: (_) => SharedPrefsRepository(),
+        ),
+        Provider<WeatherRepository>(
+          create: (_) => OpenWeatherRepository(WeatherApiService()),
         ),
       ],
       child: ScreenUtilInit(

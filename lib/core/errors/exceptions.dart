@@ -26,3 +26,13 @@ class StorageException implements Exception {
   @override
   String toString() => message;
 }
+
+class WeatherException implements Exception {
+  final String message;
+  final String? code;
+
+  WeatherException(this.message, {this.code});
+
+  @override
+  String toString() => message;
+}
